@@ -1,0 +1,57 @@
+{
+  "v": 1,
+  "entries": [
+    {
+      "v": 1,
+      "id": "20260101T120000Z-0001",
+      "ts": "2026-01-01T12:00:00Z",
+      "cmd": "dump",
+      "root": "/home/user/projects/dummy-alpha",
+      "name": "dummy-alpha",
+      "file": "/home/user/.cache/sift/dumps/dummy-alpha-20260101-120000.md",
+      "bytes": 1024,
+      "tokens": 1000,
+      "files": 2,
+      "style": "markdown"
+    },
+    {
+      "v": 1,
+      "id": "20260101T110000Z-0002",
+      "ts": "2026-01-01T11:00:00Z",
+      "cmd": "pick",
+      "root": "/home/user/projects/dummy-beta",
+      "name": "dummy-beta",
+      "file": "/home/user/.cache/sift/dumps/dummy-beta-20260101-110000.md",
+      "bytes": 2048,
+      "tokens": 2000,
+      "files": 4,
+      "style": "markdown"
+    },
+    {
+      "v": 1,
+      "id": "20251231T180000Z-0003",
+      "ts": "2025-12-31T18:00:00Z",
+      "cmd": "diff",
+      "root": "/home/user/projects/dummy-gamma",
+      "name": "dummy-gamma",
+      "file": "/home/user/.cache/sift/dumps/dummy-gamma-20251231-180000.md",
+      "bytes": 4096,
+      "tokens": 4000,
+      "files": 8,
+      "style": "markdown"
+    },
+    {
+      "v": 1,
+      "id": "20251230T090000Z-0004",
+      "ts": "2025-12-30T09:00:00Z",
+      "cmd": "delta",
+      "root": "/home/user/projects/dummy-delta",
+      "name": "dummy-delta",
+      "file": "/home/user/.cache/sift/dumps/dummy-delta-20251230-090000.md",
+      "bytes": 8192,
+      "tokens": 8000,
+      "files": 16,
+      "style": "markdown"
+    }
+  ]
+}

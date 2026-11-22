@@ -1,0 +1,5 @@
+# Local test and editor residue
+*.log
+*.qslog
+.qmllint.cache/
+test/.cache/

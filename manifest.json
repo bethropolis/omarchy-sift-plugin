@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.bethropolis.sift-dumps",
+  "name": "sift dumps",
+  "version": "0.1.0",
+  "author": "bethropolis",
+  "license": "MIT",
+  "description": "Recent sift dumps in the Omarchy bar. Drag a dump into any app.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "BarWidget.qml" },
+  "barWidget": {
+    "displayName": "sift dumps",
+    "category": "Developer",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
