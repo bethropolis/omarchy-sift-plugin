@@ -166,10 +166,9 @@ from asking `wl-copy` to place a file URI on the clipboard.
 
 ## Status
 
-The panel, live history, notice states, click-copy and browser drag target are
-implemented and live-tested. The terminal, file-manager and chat/Electron drag
-matrix and the release packaging pass are still in progress, so treat this as a
-pre-release checkout.
+v1.0.0. The panel, live history, notice states, click-copy and browser drag
+target are live-tested. Native drag is offered as `text/uri-list`; applications
+that do not accept file URIs can use click-copy instead.
 
 ## License
 
