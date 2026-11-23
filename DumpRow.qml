@@ -20,6 +20,8 @@ Rectangle {
   property bool dragOccurred: false
 
   signal clicked()
+  signal interactionStarted()
+  signal interactionFinished()
 
   readonly property string projectName: root.entry && root.entry.name
     ? String(root.entry.name)
@@ -62,13 +64,9 @@ Rectangle {
   Drag.mimeData: ({ "text/uri-list": root.fileUri + "\r\n" })
   Drag.hotSpot.x: root.width / 2
   Drag.hotSpot.y: root.height / 2
-  Drag.onDragStarted: {
-    root.dragging = true
-    console.log("sift-dumps: drag started")
-  }
   Drag.onDragFinished: function(dropAction) {
     root.dragging = false
-    console.log("sift-dumps: drag finished action=" + dropAction)
+    root.interactionFinished()
     // The drop action is deliberately ignored; Phase 4 records behaviour.
   }
 
@@ -207,6 +205,7 @@ Rectangle {
       pressPoint = Qt.point(event.x, event.y)
       root.dragOccurred = false
       root.dragging = false
+      root.interactionStarted()
     }
 
     onPositionChanged: function(event) {
@@ -221,11 +220,13 @@ Rectangle {
       root.forceActiveFocus()
       root.clicked()
       root.copyUri()
+      root.interactionFinished()
     }
 
     onCanceled: {
       root.dragging = false
       root.dragOccurred = true
+      root.interactionFinished()
     }
   }
 

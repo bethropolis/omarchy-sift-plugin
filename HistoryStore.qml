@@ -110,7 +110,6 @@ QtObject {
       root.entries = parsed.entries
       root.warning = parsed.warning
       root.state = "ready"
-      if (parsed.warning !== "") console.warn("sift-dumps: " + parsed.warning)
       root.readHistoryPath()
     }
   }

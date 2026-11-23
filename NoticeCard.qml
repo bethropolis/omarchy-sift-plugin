@@ -18,6 +18,8 @@ Item {
   property string installCommand: "yay -S sift-context-bin"
   property bool copied: false
 
+  signal interacted()
+
   readonly property bool loading: root.mode === "loading"
   readonly property bool empty: root.mode === "empty"
   readonly property bool showCommand: !root.empty && !root.loading
@@ -34,6 +36,7 @@ Item {
   readonly property color dimForeground: Util.alpha(root.contentForeground, 0.58)
 
   function copyCommand() {
+    root.interacted()
     if (copyProc.running) return
     root.copied = false
     copyProc.running = true
@@ -182,5 +185,12 @@ Item {
         onClicked: root.copyCommand()
       }
     }
+  }
+
+  MouseArea {
+    anchors.fill: parent
+    z: -1
+    acceptedButtons: Qt.LeftButton
+    onPressed: root.interacted()
   }
 }

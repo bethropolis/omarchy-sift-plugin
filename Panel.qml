@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 import qs.Commons
 import qs.Commons as Commons
 import qs.Ui
@@ -38,17 +39,35 @@ Panel {
 
   property date now: new Date()
   property int focusedRow: -1
+  property int outsideClicks: 0
+  property bool counterHidden: false
   readonly property string home: Commons.Color.home
+
+  function resetOutsideClicks() {
+    root.outsideClicks = 0
+  }
+
+  function noteOutsideClick() {
+    root.outsideClicks += 1
+    if (root.outsideClicks >= 3) {
+      root.outsideClicks = 0
+      root.close()
+    }
+  }
 
   function open() {
     root.now = new Date()
     root.focusedRow = -1
+    root.outsideClicks = 0
+    root.counterHidden = false
     historyStore.active = true
     historyStore.refresh()
     root.controller.show()
   }
 
   function close() {
+    root.outsideClicks = 0
+    root.counterHidden = false
     historyStore.active = false
     root.controller.hide()
   }
@@ -99,6 +118,42 @@ Panel {
     }
   }
 
+  // KeyboardPanel's input region stays on the card so external drags can reach
+  // the app underneath. This separate Top-layer surface counts clicks outside
+  // the card, excluding the bar strip so the bar still toggles the panel.
+  // It hides for the duration of an external drag.
+  PanelWindow {
+    id: outsideCatcher
+    visible: root.opened && !root.counterHidden
+    screen: panel.screen
+    color: "transparent"
+    exclusionMode: ExclusionMode.Ignore
+    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    WlrLayershell.namespace: "omarchy-sift-dumps-outside"
+    anchors {
+      top: true
+      bottom: true
+      left: true
+      right: true
+    }
+
+    readonly property real strip: panel.barThickness + panel.gap
+    readonly property bool horizontalBar: panel.barPos === "top" || panel.barPos === "bottom"
+    mask: Region {
+      x: panel.barPos === "left" ? outsideCatcher.strip : 0
+      y: panel.barPos === "top" ? outsideCatcher.strip : 0
+      width: panel.screenW - ((panel.barPos === "left" || panel.barPos === "right") ? outsideCatcher.strip : 0)
+      height: panel.screenH - (outsideCatcher.horizontalBar ? outsideCatcher.strip : 0)
+    }
+
+    MouseArea {
+      anchors.fill: parent
+      acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+      onClicked: root.noteOutsideClick()
+    }
+  }
+
   KeyboardPanel {
     id: panel
     anchorItem: root.anchorItem
@@ -138,6 +193,15 @@ Panel {
       onActivateRequested: root.activateFocused()
       onCloseRequested: root.close()
 
+      // Any click on the card that does not land on a row or button resets
+      // the outside-click counter.
+      MouseArea {
+        anchors.fill: parent
+        z: -1
+        acceptedButtons: Qt.LeftButton
+        onPressed: root.resetOutsideClicks()
+      }
+
       NoticeCard {
         id: noticeCard
         anchors.fill: parent
@@ -146,6 +210,7 @@ Panel {
         contentForeground: root.contentForeground
         accent: Commons.Color.accent
         fontFamily: root.contentFontFamily
+        onInteracted: root.resetOutsideClicks()
       }
 
       Item {
@@ -218,7 +283,15 @@ Panel {
                   contentForeground: root.contentForeground
                   accent: Commons.Color.accent
                   fontFamily: root.contentFontFamily
-                  onClicked: root.focusedRow = index
+                  onClicked: {
+                    root.focusedRow = index
+                    root.resetOutsideClicks()
+                  }
+                  onInteractionStarted: {
+                    root.counterHidden = true
+                    root.resetOutsideClicks()
+                  }
+                  onInteractionFinished: root.counterHidden = false
                 }
               }
             }
