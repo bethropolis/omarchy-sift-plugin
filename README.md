@@ -166,10 +166,10 @@ from asking `wl-copy` to place a file URI on the clipboard.
 
 ## Status
 
-v1.0.1. The panel, live history, notice states, click-copy and browser drag
-target are live-tested. Three clicks outside the card close the panel; a click
-inside resets that count. Native drag is offered as `text/uri-list`; applications
-that do not accept file URIs can use click-copy instead.
+v1.0.2. The panel, live history, notice states, click-copy and browser drag
+target are live-tested. Only the newest dump for each project is listed. Native
+drag is offered as `text/uri-list`; applications that do not accept file URIs
+can use click-copy instead. Close the panel from the bar icon or Escape.
 
 ## License
 

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.bethropolis.sift-dumps",
   "name": "sift dumps",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "bethropolis",
   "license": "MIT",
   "description": "Recent sift dumps in the Omarchy bar. Drag a dump into any app.",
