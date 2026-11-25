@@ -107,7 +107,7 @@ QtObject {
       }
 
       var parsed = Model.parseHistory(String(historyOut.text || ""))
-      root.entries = parsed.entries
+      root.entries = Model.latestPerRoot(parsed.entries)
       root.warning = parsed.warning
       root.state = "ready"
       root.readHistoryPath()

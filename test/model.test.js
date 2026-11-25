@@ -7,7 +7,7 @@ const source = fs.readFileSync(path.join(__dirname, "..", "Model.js"), "utf8")
   .replace(/^\s*\.pragma\s+library\s*;?\s*$/m, "")
 
 const Model = new Function(
-  source + "\nreturn { formatTokens, formatBytes, groupLabel, displayPath, fileUri, parseHistory };"
+  source + "\nreturn { formatTokens, formatBytes, groupLabel, displayPath, fileUri, latestPerRoot, parseHistory };"
 )()
 
 function localDate(year, month, day, hour, minute, second) {
@@ -106,6 +106,36 @@ test("fileUri percent-encodes each path segment", () => {
   assert.equal(Model.fileUri("/"), "file:///")
 })
 
+test("latestPerRoot keeps the newest entry for each project", () => {
+  const entries = [
+    { id: "a-new", root: "/work/alpha", file: "/dumps/a-new.md" },
+    { id: "a-old", root: "/work/alpha", file: "/dumps/a-old.md" },
+    { id: "b-new", root: "/work/beta", file: "/dumps/b-new.md" },
+    { id: "a-older", root: "/work/alpha", file: "/dumps/a-older.md" },
+    { id: "b-old", root: "/work/beta", file: "/dumps/b-old.md" }
+  ]
+  assert.deepEqual(
+    Model.latestPerRoot(entries).map((entry) => entry.id),
+    ["a-new", "b-new"]
+  )
+  assert.equal(entries.length, 5)
+  assert.deepEqual(Model.latestPerRoot([]), [])
+  assert.deepEqual(Model.latestPerRoot(null), [])
+})
+
+test("latestPerRoot keeps entries without a project root", () => {
+  const entries = [
+    { id: "one", root: "" },
+    { id: "two", root: "" },
+    { id: "three", root: "/work/alpha" },
+    { id: "four", root: "/work/alpha" }
+  ]
+  assert.deepEqual(
+    Model.latestPerRoot(entries).map((entry) => entry.id),
+    ["one", "two", "three"]
+  )
+})
+
 test("parseHistory reads the fixture and drops unknown fields", () => {
   const text = fs.readFileSync(path.join(__dirname, "fixtures", "history-sample.json"), "utf8")
   const result = Model.parseHistory(text)
@@ -117,6 +147,8 @@ test("parseHistory reads the fixture and drops unknown fields", () => {
   assert.equal(first.name, "dummy-alpha")
   assert.equal(first.root, "/home/user/projects/dummy-alpha")
   assert.equal(first.file, "/home/user/.cache/sift/dumps/dummy-alpha-20260101-120000.md")
+  assert.equal(first.output, "/home/user/projects/dummy-alpha/codebase.md")
+  assert.equal(result.entries[1].output, "")
   assert.equal(first.bytes, 1024)
   assert.equal(first.tokens, 1000)
   assert.equal(first.files, 2)
@@ -160,6 +192,7 @@ test("parseHistory normalizes numbers and skips non-object entries", () => {
         root: "/tmp/project",
         name: "project",
         file: "/tmp/dump.md",
+        output: "/tmp/project/context.md",
         bytes: -10,
         tokens: "12.7",
         files: "3",
@@ -176,6 +209,7 @@ test("parseHistory normalizes numbers and skips non-object entries", () => {
     root: "/tmp/project",
     name: "project",
     file: "/tmp/dump.md",
+    output: "/tmp/project/context.md",
     bytes: 0,
     tokens: 13,
     files: 3,

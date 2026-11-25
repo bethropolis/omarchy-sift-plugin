@@ -9,6 +9,7 @@
       "root": "/home/user/projects/dummy-alpha",
       "name": "dummy-alpha",
       "file": "/home/user/.cache/sift/dumps/dummy-alpha-20260101-120000.md",
+      "output": "/home/user/projects/dummy-alpha/codebase.md",
       "bytes": 1024,
       "tokens": 1000,
       "files": 2,

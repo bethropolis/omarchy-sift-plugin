@@ -92,6 +92,27 @@ function historyNumber(value) {
   return isFinite(n) && n > 0 ? Math.round(n) : 0
 }
 
+// sift history lists newest first. Keep the first entry for each project root
+// so repeated dumps of the same project do not fill the panel. Entries without
+// a root are left alone because there is nothing reliable to group them by.
+function latestPerRoot(entries) {
+  var result = []
+  var seen = {}
+  if (!Array.isArray(entries)) return result
+
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i]
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) continue
+    var root = toText(entry.root)
+    if (root !== "") {
+      if (Object.prototype.hasOwnProperty.call(seen, root)) continue
+      seen[root] = true
+    }
+    result.push(entry)
+  }
+  return result
+}
+
 function parseHistory(text) {
   var result = { entries: [], warning: "" }
   if (typeof text !== "string" || text.trim() === "") {
@@ -130,6 +151,7 @@ function parseHistory(text) {
       root: toText(item.root),
       name: toText(item.name),
       file: toText(item.file),
+      output: toText(item.output),
       bytes: historyNumber(item.bytes),
       tokens: historyNumber(item.tokens),
       files: historyNumber(item.files),
